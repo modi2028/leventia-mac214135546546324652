@@ -77,5 +77,5 @@ try {
     console.log('⚠ Not on macOS - iconset created but .icns needs iconutil (run this script on a Mac)')
   }
 } catch (e) {
-  console.log('⚠ Could not create .icns:', (e as Error).message)
+  console.log('⚠ Could not create .icns:', e?.message ?? e)
 }

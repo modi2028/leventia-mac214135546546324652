@@ -35,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Generate icons
-        run: npm run make-icon || echo "Icon generation skipped"
+        run: npm run make-icon || true  # Don't fail if icon generation fails
 
       - name: Build
         run: npm run dist
