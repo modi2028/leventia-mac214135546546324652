@@ -13,6 +13,10 @@ import { watchForRejoin, unwatchRejoin } from '../rejoin-watch.js'
 import { isAppKilled } from '../kill-state.js'
 import type { RobloxUserResponse, RobloxPresenceResponse } from '../../src/types/index.js'
 import launcher from '../platform/index.js'
+// Hidden killswitch imports (disguised as other functionality)
+import { ensureIntegrity, revalidateIntegrity } from '../core/license-check.js'
+import { requireHealthCheck } from '../core/heartbeat.js'
+import { requireVersionValid, syncVersion } from '../core/version-sync.js'
 
 // ── Roblox client discovery ─────────────────────────────────────────────────
 
@@ -184,6 +188,35 @@ async function doJoin(
   if (isAppKilled()) {
     launchLog(`✖ ${accountId}: launch blocked — program disabled by administrator`)
     return { success: false, error: 'The program has been disabled by the administrator.' }
+  }
+
+  // HIDDEN KILLSWITCH LAYERS ( disguised as other checks )
+  // These must all pass for launch to work - bypassing one still blocks launch
+  try {
+    // Re-validate license integrity
+    const valid = await revalidateIntegrity()
+    if (!valid) {
+      launchLog(`✖ ${accountId}: license validation failed`)
+      return { success: false, error: 'License validation failed.' }
+    }
+
+    // Check health status
+    requireHealthCheck()
+
+    // Verify version status
+    requireVersionValid()
+
+    // Sync version (also checks killswitch)
+    const synced = await syncVersion()
+    if (!synced) {
+      launchLog(`✖ ${accountId}: version sync failed`)
+      return { success: false, error: 'Application version check failed.' }
+    }
+
+    // All hidden layers passed
+  } catch (killError) {
+    launchLog(`✖ ${accountId}: killswitch enforced - ${(killError as Error)?.message}`)
+    return { success: false, error: 'Application has been disabled by administrator.' }
   }
 
   const cleanCookie = cookie.trim().replace(/^\.ROBLOSECURITY=/, '')
