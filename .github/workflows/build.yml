@@ -41,14 +41,18 @@ jobs:
         run: npm run dist
 
       - name: Upload artifacts
+        if: always()  # Upload even if build fails partially
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
           path: |
             release/*.dmg
+            release/*.dmg.blockmap
             release/*.zip
+            release/*.zip.blockmap
             release/*.exe
           retention-days: 7
+          if-no-files-found: warn
 
       - name: Create Release (on tags only)
         if: startsWith(github.ref, 'refs/tags/')
@@ -58,5 +62,6 @@ jobs:
             release/*.dmg
             release/*.zip
             release/*.exe
+          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
