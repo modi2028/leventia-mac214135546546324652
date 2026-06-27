@@ -1,0 +1,459 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --app-bg:      oklch(0.13 0.01 260);
+  --accent:      oklch(0.64 0.23 280);
+  --accent-2:    oklch(0.58 0.25 300);
+  --accent-glow: rgba(139,92,246,0.5);
+  --grad-btn:    linear-gradient(135deg, oklch(0.66 0.23 282), oklch(0.58 0.25 300));
+
+  /* Liquid-glass recipe — translucent, edge-lit, light-refracting (premium depth) */
+  --glass-bg:
+    linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0) 38%),
+    linear-gradient(155deg, rgba(50,42,86,0.58), rgba(10,9,22,0.74));
+  --glass-border: rgba(255,255,255,0.16);
+  --glass-blur:   blur(50px) saturate(200%) brightness(1.08);
+  --glass-radius: 20px;
+  --glass-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.26),
+    inset 0 -1px 1px rgba(0,0,0,0.26),
+    0 40px 100px -34px rgba(0,0,0,0.82),
+    0 14px 40px -18px rgba(124,58,237,0.48);
+
+  /* Typography */
+  --text-primary:   oklch(0.96 0.01 260);
+  --text-secondary: oklch(0.86 0.03 285);
+  --text-muted:     oklch(0.68 0.035 280);
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background:
+    radial-gradient(135% 115% at 50% -12%, oklch(0.18 0.035 285) 0%, transparent 52%),
+    radial-gradient(95% 80% at 100% 102%, oklch(0.15 0.03 250) 0%, transparent 58%),
+    var(--app-bg);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01";
+  letter-spacing: -0.003em;
+  user-select: none;
+}
+input, textarea, select { user-select: text; }
+/* tabular figures so stat numbers don't jitter as they change */
+.tnum, [class*="font-mono"] { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(167,139,250,0.45), rgba(103,232,249,0.35));
+  border-radius: 99px;
+  transition: background 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(167,139,250,0.8), rgba(103,232,249,0.6)); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ── Keyframes ─────────────────────────────────────────────────────────────── */
+@keyframes gridDrift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+@keyframes shimmerText {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: -200% 50%; }
+}
+@keyframes ringPulse {
+  0%   { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.9);  opacity: 0; }
+}
+@keyframes barShine {
+  0%   { transform: translateX(-120%); }
+  60%, 100% { transform: translateX(360%); }
+}
+@keyframes floatA {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%      { transform: translate(32px,-22px) scale(1.05); }
+  66%      { transform: translate(-18px,28px) scale(0.97); }
+}
+@keyframes floatB {
+  0%,100% { transform: translate(0,0) scale(1); }
+  40%      { transform: translate(-26px,18px) scale(1.04); }
+  70%      { transform: translate(16px,-32px) scale(1.07); }
+}
+@keyframes floatC {
+  0%,100% { transform: translate(0,0) scale(1); }
+  30%      { transform: translate(22px,16px) scale(1.03); }
+  60%      { transform: translate(-14px,-26px) scale(0.96); }
+}
+@keyframes float   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-7px); } }
+@keyframes fadeIn  { from { opacity:0; }                     to { opacity:1; } }
+@keyframes slideUp { from { transform:translateY(12px);opacity:0; } to { transform:translateY(0);opacity:1; } }
+@keyframes scaleIn { from { transform:scale(0.94);opacity:0; } to { transform:scale(1);opacity:1; } }
+@keyframes spinSlow    { to { transform:rotate(360deg); } }
+@keyframes glowPulse { 0%,100% { opacity:0.45; } 50% { opacity:1; } }
+@keyframes islandCountdown { from { width:100%; } to { width:0%; } }
+@keyframes islandPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.14); } }
+
+/* ── Animated background classes ───────────────────────────────────────────── */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridDrift 60s linear infinite;
+}
+.aurora-a {
+  position: absolute;
+  width: 560px; height: 560px;
+  border-radius: 50%;
+  top: -12%; left: -6%;
+  background: radial-gradient(circle at 30% 30%, oklch(0.72 0.17 258 / 0.55), transparent 65%);
+  animation: floatA 24s ease-in-out infinite;
+}
+.aurora-b {
+  position: absolute;
+  width: 520px; height: 520px;
+  border-radius: 50%;
+  top: 20%; right: -10%;
+  background: radial-gradient(circle at 50% 50%, oklch(0.86 0.16 92 / 0.45), transparent 65%);
+  animation: floatB 28s ease-in-out infinite;
+  animation-delay: -9s;
+}
+.aurora-c {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  bottom: -16%; left: 4%;
+  background: radial-gradient(circle at 50% 50%, oklch(0.74 0.18 150 / 0.40), transparent 65%);
+  animation: floatC 32s ease-in-out infinite;
+  animation-delay: -16s;
+}
+
+/* ── Glass surface ──────────────────────────────────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--glass-radius);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+}
+/* inner aurora shimmer — placed as a child div inside .glass panels */
+.glass-aurora {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(240px 150px at 4% -6%, rgba(167,139,250,0.34), transparent 62%),
+    radial-gradient(220px 150px at 104% 106%, rgba(34,211,238,0.28), transparent 62%),
+    radial-gradient(200px 130px at 96% -4%, rgba(244,114,182,0.18), transparent 60%);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 0;
+}
+.glass > *:not(.glass-aurora) { position: relative; z-index: 1; }
+
+/* Specular edge sheen — the liquid-glass surface highlight along the top rim. */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0) 100%);
+  pointer-events: none;
+  z-index: 0;
+  mask: linear-gradient(180deg, #000, transparent);
+  -webkit-mask: linear-gradient(180deg, #000, transparent);
+}
+
+/* ── Utilities ─────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .animate-fade-in    { animation: fadeIn  0.2s ease-out both; }
+  .animate-slide-up   { animation: slideUp 0.28s cubic-bezier(0.16,1,0.3,1) both; }
+  .animate-scale-in   { animation: scaleIn 0.22s cubic-bezier(0.16,1,0.3,1) both; }
+  .animate-glow-pulse { animation: glowPulse 2.5s ease-in-out infinite; }
+  .animate-pulse-soft { animation: glowPulse 2.5s ease-in-out infinite; }
+
+  /* ── Buttons ── */
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-1.5 font-semibold text-xs text-white;
+    background: var(--grad-btn);
+    border-radius: 12px;
+    padding: 7px 14px;
+    border: none;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.30),
+      inset 0 -1px 0 rgba(0,0,0,0.18),
+      0 4px 18px rgba(124,58,237,0.40);
+    transition: transform .26s cubic-bezier(0.34,1.56,0.64,1), box-shadow .26s ease, filter .2s ease;
+  }
+  .btn-accent:hover:not(:disabled) {
+    filter: brightness(1.1) saturate(1.08);
+    transform: translateY(-1.5px) scale(1.015);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.38),
+      0 10px 30px rgba(124,58,237,0.6);
+  }
+  .btn-accent:active:not(:disabled) { transform: scale(0.96); transition-duration: .08s; }
+  .btn-accent:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-pill { @apply btn-accent; border-radius: 9999px; padding: 8px 20px; }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 font-medium text-xs;
+    color: var(--text-secondary);
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 12px;
+    padding: 7px 13px;
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+    transition: transform .22s cubic-bezier(0.34,1.5,0.64,1), background .2s ease, border-color .2s ease, color .2s ease;
+  }
+  .btn-ghost:hover:not(:disabled) {
+    color: var(--text-primary);
+    background: linear-gradient(180deg, rgba(255,255,255,0.17), rgba(255,255,255,0.06));
+    border-color: rgba(255,255,255,0.30);
+    transform: translateY(-1.5px);
+  }
+  .btn-ghost:active:not(:disabled) { transform: scale(0.97); transition-duration: .08s; }
+  .btn-ghost:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ── Input ── */
+  .input-base {
+    @apply text-xs outline-none transition-all duration-200;
+    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 12px;
+    color: var(--text-primary);
+    padding: 8px 13px;
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  .input-base::placeholder { color: var(--text-muted); }
+  .input-base:focus {
+    border-color: rgba(167,139,250,0.6);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.18), inset 0 1px 0 rgba(255,255,255,0.12);
+    background: linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.05));
+  }
+  .input-base:hover:not(:focus) { border-color: rgba(255,255,255,0.26); }
+
+  /* ── Card (legacy alias) ── */
+  .card { @apply glass; }
+
+  /* ── Status pills ── */
+  .status-pill   { display:inline-flex; align-items:center; gap:5px; border-radius:9999px; font-size:11px; font-weight:600; padding:3px 9px; letter-spacing:0.02em; }
+  .status-online  { @apply status-pill; background:rgba(34,197,94,0.15);  color:#86efac; border:1px solid rgba(34,197,94,0.3); }
+  .status-ingame  { @apply status-pill; background:rgba(59,130,246,0.15); color:#93c5fd; border:1px solid rgba(59,130,246,0.3); }
+  .status-studio  { @apply status-pill; background:rgba(249,115,22,0.15); color:#fdba74; border:1px solid rgba(249,115,22,0.3); }
+  .status-offline { @apply status-pill; background:rgba(255,255,255,0.07); color:oklch(0.82 0.035 284); border:1px solid rgba(255,255,255,0.14); }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MODERN DESIGN LANGUAGE  —  [data-design="modern"]
+   ────────────────────────────────────────────────────────────────────────────
+   A complete alternate skin: crisp, flat, low-blur "clean dashboard" look that
+   replaces the heavy liquid-glass aurora aesthetic. Every rule is scoped under
+   [data-design="modern"], so this NEVER touches the classic design — removing the
+   attribute (Themes → Design → Classic) restores the original UI exactly, live,
+   with no rebuild. The active COLOR theme's accent still applies on top.
+   ════════════════════════════════════════════════════════════════════════════ */
+[data-design="modern"] {
+  --glass-radius:   14px;
+  --text-primary:   oklch(0.98 0.004 260);
+  --text-secondary: oklch(0.86 0.03 285);
+  --text-muted:     oklch(0.7 0.035 282);
+}
+
+/* Cards — opaque-ish, hairline border, one soft shadow, light blur. No aurora
+   shimmer, no specular rim. This is the biggest visual shift from classic. */
+[data-design="modern"] .glass,
+[data-design="modern"] .card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.018));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 1px 2px rgba(0,0,0,0.30),
+    0 16px 36px -24px rgba(0,0,0,0.85);
+}
+[data-design="modern"] .glass::before { display: none; }   /* drop specular sheen */
+[data-design="modern"] .glass-aurora   { display: none; }  /* drop inner aurora glow */
+
+/* Backdrop — calm the floating aurora blobs, tighten the grid into a fine mesh. */
+[data-design="modern"] .aurora-a,
+[data-design="modern"] .aurora-b,
+[data-design="modern"] .aurora-c { opacity: 0.30; filter: saturate(0.6) blur(10px); }
+[data-design="modern"] .bg-grid {
+  opacity: 0.45;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.038) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.038) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* Primary buttons — tighter radius, refined depth, restrained glow. */
+[data-design="modern"] .btn-accent {
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 2px 8px rgba(0,0,0,0.30),
+    0 8px 20px -10px var(--accent-glow);
+}
+[data-design="modern"] .btn-accent:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    0 10px 26px -10px var(--accent-glow);
+}
+[data-design="modern"] .btn-pill { border-radius: 9999px; }
+
+/* Ghost buttons + inputs — flat, hairline, no inner glow. */
+[data-design="modern"] .btn-ghost,
+[data-design="modern"] .input-base {
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  backdrop-filter: blur(10px) saturate(115%);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+  box-shadow: none;
+}
+[data-design="modern"] .btn-ghost:hover:not(:disabled) {
+  background: rgba(255,255,255,0.085);
+  border-color: rgba(255,255,255,0.22);
+}
+[data-design="modern"] .input-base:focus {
+  border-color: var(--accent);
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Status pills — flatter, crisper corners. */
+[data-design="modern"] .status-pill { border-radius: 7px; }
+
+/* Scrollbar — a touch wider, neutral. */
+[data-design="modern"] ::-webkit-scrollbar { width: 6px; height: 6px; }
+[data-design="modern"] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.13); border-radius: 99px; }
+[data-design="modern"] ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.26); }
+
+/* Slightly tighter type rhythm for the modern feel. */
+[data-design="modern"] body { letter-spacing: -0.005em; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   ANIMATIONS & MICRO-INTERACTIONS
+   Tasteful, GPU-friendly motion (transform/opacity only). Honours reduced-motion.
+   ════════════════════════════════════════════════════════════════════════════ */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(10px) scale(0.992); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(0.9); }
+  60%  { opacity: 1; transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes btnSheen { to { transform: translateX(360%) skewX(-18deg); } }
+
+/* Whole-page transition when switching tabs — smooth fade + lift + micro-zoom. */
+.page-enter { animation: pageEnter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Entrance helpers (opt-in via className). */
+.animate-rise { animation: riseIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-pop  { animation: popIn 0.34s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Staggered list entrance — add .stagger to a container; children rise in sequence. */
+.stagger > * { animation: riseIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0.02s; }
+.stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.stagger > *:nth-child(3) { animation-delay: 0.10s; }
+.stagger > *:nth-child(4) { animation-delay: 0.14s; }
+.stagger > *:nth-child(5) { animation-delay: 0.18s; }
+.stagger > *:nth-child(6) { animation-delay: 0.22s; }
+.stagger > *:nth-child(7) { animation-delay: 0.26s; }
+.stagger > *:nth-child(8) { animation-delay: 0.30s; }
+
+/* Hover-lift utility for cards / rows / nav items — springy rise on hover. */
+.lift { transition: transform .2s cubic-bezier(0.34, 1.5, 0.64, 1), box-shadow .2s ease, border-color .2s ease, background .2s ease; will-change: transform; }
+.lift:hover { transform: translateY(-2px); }
+.lift:active { transform: translateY(0) scale(0.99); transition-duration: .08s; }
+
+/* Light sweep across primary buttons on hover. */
+.btn-accent { position: relative; overflow: hidden; }
+.btn-accent::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: translateX(-200%) skewX(-18deg);
+  pointer-events: none;
+}
+.btn-accent:hover:not(:disabled)::after { animation: btnSheen 0.7s ease; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PREMIUM POLISH — extra depth, light & micro-interactions on top of the base.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Interactive glass cards: a soft accent halo + a brighter rim on hover. Add the
+   `.lift` class (already used widely) to any .glass card and it gains this. */
+.glass.lift:hover {
+  border-color: rgba(167,139,250,0.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    0 44px 110px -34px rgba(0,0,0,0.85),
+    0 18px 50px -20px rgba(124,58,237,0.55);
+}
+
+/* Keyboard focus — a refined accent ring (only for keyboard nav, not mouse). */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(10,9,22,0.9), 0 0 0 4px rgba(167,139,250,0.55);
+  border-radius: 8px;
+}
+.input-base:focus-visible { box-shadow: 0 0 0 3px rgba(124,58,237,0.22), inset 0 1px 0 rgba(255,255,255,0.12); }
+
+/* Loading shimmer skeleton — `<div class="shimmer" style="width/height">`. */
+@keyframes shimmerSweep { 100% { background-position: 200% 0; } }
+.shimmer {
+  background: linear-gradient(100deg, rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.04) 70%);
+  background-size: 200% 100%;
+  animation: shimmerSweep 1.4s linear infinite;
+  border-radius: 8px;
+}
+
+/* Gradient text helper — premium wordmark / headings. */
+.text-gradient {
+  background: linear-gradient(110deg, #e9d5ff 0%, #c4b5fd 38%, #93c5fd 68%, #67e8f9 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+
+/* Accessibility: respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#13111f"/>
+      <stop offset="100%" stop-color="#08060f"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="40" y1="40" x2="216" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e040fb"/>
+      <stop offset="28%" stop-color="#9333ea"/>
+      <stop offset="62%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="120" y1="55" x2="216" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"/>
+    </filter>
+  </defs>
+
+  <!-- Dark rounded background -->
+  <rect x="0" y="0" width="256" height="256" rx="58" fill="url(#bg)"/>
+  <rect x="1" y="1" width="254" height="254" rx="57" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="2"/>
+
+  <!-- Logo, centered (logo coords are 0..200, scaled to ~176 with 40px padding) -->
+  <g transform="translate(40,40) scale(0.88)">
+    <!-- soft glow -->
+    <g opacity="0.35" filter="url(#glow)">
+      <circle cx="100" cy="100" r="72" stroke="url(#g1)" stroke-width="26"
+        stroke-dasharray="350 112" stroke-dashoffset="-22" stroke-linecap="round"/>
+      <circle cx="116" cy="90" r="44" stroke="url(#g2)" stroke-width="20"
+        stroke-dasharray="212 65" stroke-dashoffset="108" stroke-linecap="round"/>
+    </g>
+    <!-- main rings -->
+    <circle cx="100" cy="100" r="72" stroke="url(#g1)" stroke-width="24"
+      stroke-dasharray="350 112" stroke-dashoffset="-22" stroke-linecap="round"/>
+    <circle cx="116" cy="90" r="44" stroke="url(#g2)" stroke-width="20"
+      stroke-dasharray="212 65" stroke-dashoffset="108" stroke-linecap="round"/>
+  </g>
+</svg>

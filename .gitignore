@@ -1,0 +1,25 @@
+# ── Dependencies ───────────────────────────────────────────────
+node_modules/
+**/node_modules/
+
+# ── Build output / artifacts (never commit these) ──────────────
+dist/
+dist-electron/
+release/            # electron-builder output — the big installer lives here
+*.exe
+*.blockmap
+*.asar
+
+# ── Secrets — DO NOT COMMIT ────────────────────────────────────
+.env
+.env.*
+**/.env
+**/.env.*
+!**/.env.example
+
+# ── Logs / misc ────────────────────────────────────────────────
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+launch-log.txt

@@ -1,0 +1,45 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        accent:         'var(--accent)',
+        'accent-2':     'var(--accent-2)',
+        'accent-3':     'var(--accent-3)',
+        'accent-dim':   'var(--accent-dim)',
+        'bg-primary':   '#07070e',
+        'bg-secondary': '#0c0c18',
+        'bg-card':      '#10101e',
+        'bg-hover':     '#16162a',
+        'border-dim':   'rgba(255,255,255,0.05)',
+        'border-base':  'rgba(255,255,255,0.09)',
+        'border-light': 'rgba(255,255,255,0.14)',
+        'tx-primary':   '#f0f0ff',
+        'tx-secondary': '#8080a8',
+        'tx-muted':     '#44445a',
+        green:          '#22c55e',
+        blue:           '#3b82f6',
+        orange:         '#f97316',
+        violet:         '#7c3aed',
+        cyan:           '#06b6d4',
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Consolas', 'Courier New', 'monospace'],
+      },
+      borderRadius: {
+        sm:   '8px',
+        DEFAULT: '10px',
+        md:   '12px',
+        lg:   '14px',
+        xl:   '16px',
+        '2xl': '20px',
+        '3xl': '24px',
+        '4xl': '32px',
+        full: '9999px',
+      },
+    },
+  },
+  plugins: [],
+}

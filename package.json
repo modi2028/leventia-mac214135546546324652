@@ -1,0 +1,109 @@
+{
+  "name": "leventia-alting",
+  "private": true,
+  "version": "2.3.0",
+  "description": "Leventia Alting — Multi-account Roblox dashboard",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "make-icon": "node scripts/make-icon.mjs",
+    "dist": "vite build && electron-builder",
+    "dist:obf": "vite build && node --max-old-space-size=8192 scripts/obfuscate.mjs && electron-builder"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "^20.17.6",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "javascript-obfuscator": "^5.4.3",
+    "png-to-ico": "^3.0.1",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vite-plugin-electron": "^0.28.8"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "build": {
+    "appId": "com.leventia.alting",
+    "productName": "Leventia Alting",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "!**/*.map"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/multi.exe",
+        "to": "multi.exe",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "resources/handle64.exe",
+        "to": "handle64.exe",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "resources/cookielock.exe",
+        "to": "cookielock.exe",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "icon": "public/icon.icns",
+      "category": "public.app-category.games",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "nsis": {
+      "include": "build/installer.nsh",
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico",
+      "installerHeaderIcon": "public/icon.ico",
+      "installerSidebar": "build/installerSidebar.bmp",
+      "installerHeader": "build/installerHeader.bmp",
+      "shortcutName": "Leventia Alting",
+      "uninstallDisplayName": "Leventia Alting ${version}",
+      "artifactName": "Setup Leventia Alting Program V2.3.${ext}"
+    }
+  }
+}

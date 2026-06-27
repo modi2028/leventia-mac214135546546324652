@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e040fb"/>
+      <stop offset="28%" stop-color="#9333ea"/>
+      <stop offset="62%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="90" y1="20" x2="200" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <!-- Soft glow layer -->
+  <circle cx="100" cy="100" r="72" stroke="url(#g1)" stroke-width="28"
+    stroke-dasharray="350 112" stroke-dashoffset="-22" stroke-linecap="round"
+    opacity="0.25" filter="url(#glow)"/>
+  <circle cx="116" cy="90" r="44" stroke="url(#g2)" stroke-width="22"
+    stroke-dasharray="212 65" stroke-dashoffset="108" stroke-linecap="round"
+    opacity="0.25" filter="url(#glow)"/>
+  <!-- Main rings -->
+  <circle cx="100" cy="100" r="72" stroke="url(#g1)" stroke-width="24"
+    stroke-dasharray="350 112" stroke-dashoffset="-22" stroke-linecap="round"/>
+  <circle cx="116" cy="90" r="44" stroke="url(#g2)" stroke-width="20"
+    stroke-dasharray="212 65" stroke-dashoffset="108" stroke-linecap="round"/>
+</svg>
