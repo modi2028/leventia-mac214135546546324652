@@ -205,8 +205,8 @@ var deleteUpdate = /* @__PURE__ */ __name((id) => {
 }, "deleteUpdate");
 
 // electron/supabase-config.ts
-var SUPABASE_URL = process.env.LVNT_SUPABASE_URL ?? "https://uwnrvdtsqtfrlbxtffys.supabase.co";
-var SUPABASE_KEY = process.env.LVNT_SUPABASE_KEY ?? "sb_publishable_vKsSKm7qg9w0Pn_ldidpDQ_f_a9Payv";
+var SUPABASE_URL = process.env.LVNT_SUPABASE_URL ?? "";
+var SUPABASE_KEY = process.env.LVNT_SUPABASE_KEY ?? "";
 function supabaseEnabled() {
   return SUPABASE_URL.startsWith("https://") && SUPABASE_KEY.length > 20;
 }

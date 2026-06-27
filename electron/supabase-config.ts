@@ -11,8 +11,8 @@
 // the anon key together with the RLS policies / RPC functions in supabase-schema.sql.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const SUPABASE_URL = process.env.LVNT_SUPABASE_URL ?? 'https://uwnrvdtsqtfrlbxtffys.supabase.co'
-export const SUPABASE_KEY = process.env.LVNT_SUPABASE_KEY ?? 'sb_publishable_vKsSKm7qg9w0Pn_ldidpDQ_f_a9Payv'
+export const SUPABASE_URL = process.env.LVNT_SUPABASE_URL ?? ''
+export const SUPABASE_KEY = process.env.LVNT_SUPABASE_KEY ?? ''
 
 export function supabaseEnabled(): boolean {
   return SUPABASE_URL.startsWith('https://') && SUPABASE_KEY.length > 20

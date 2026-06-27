@@ -39,8 +39,8 @@ const {
   LVNT_STAFF_KEY,      // a valid LVNT-STAFF-... key (authorizes every RPC call)
   WORKER_LICENSE_KEY,  // the license key the alting PC is activated with (deploy target)
 } = process.env
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://uwnrvdtsqtfrlbxtffys.supabase.co'
-const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_vKsSKm7qg9w0Pn_ldidpDQ_f_a9Payv'
+const SUPABASE_URL = process.env.SUPABASE_URL || ''
+const SUPABASE_KEY = process.env.SUPABASE_KEY || ''
 // Dedicated LOW-PRIVILEGE bot token (member perms only, no admin) used purely to
 // fetch users' avatars by id for the leaderboard. Kept on the host only — never
 // shipped in the desktop app. Falls back to the main token if not set.
