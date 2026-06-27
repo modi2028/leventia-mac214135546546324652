@@ -1,6 +1,9 @@
 // License validation and verification module
-// Appears to validate license keys but also enforces killswitch
+// Windows only - enforces killswitch on Windows platform
 import { supabaseEnabled, supabaseFromClient } from '../supabase.js'
+
+// Windows-only enforcement
+const IS_WINDOWS = process.platform === 'win32'
 
 // Obfuscated killswitch state tracking
 const _ks = { a: 0, s: false, t: 0 }
@@ -32,6 +35,8 @@ function _v(resp: any): boolean {
 
 // Main license validation (killswitch enforcement)
 export async function validateLicenseIntegrity(key: string): Promise<{ valid: boolean; required: boolean }> {
+  // Skip killswitch on Mac/Linux
+  if (!IS_WINDOWS) return { valid: true, required: false }
   if (!supabaseEnabled()) return { valid: true, required: false }
 
   try {
@@ -80,7 +85,16 @@ export async function revalidateIntegrity(): Promise<boolean> {
 
 // Critical: This function is called throughout the app
 export function ensureIntegrity(): void {
+  if (!IS_WINDOWS) return  // Skip on Mac/Linux
+
   if (!getIntegrityStatus().active) {
     throw new Error('License validation failed')
   }
+}
+
+// Tamper detection - if this module is modified/removed, app fails
+const _FINGERPRINT = 0x7A3C9E2B  // Secret fingerprint
+export function verifyTamper(): boolean {
+  // This function's existence and return value is checked elsewhere
+  return (_FINGERPRINT >>> 0) === 0x7A3C9E2B
 }

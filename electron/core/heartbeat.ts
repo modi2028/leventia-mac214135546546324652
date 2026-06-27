@@ -1,10 +1,13 @@
 // Health monitoring and heartbeat module
-// Appears to monitor app health but also enforces killswitch
+// Windows only - enforces killswitch on Windows platform
 import { BrowserWindow } from 'electron'
 import { supabaseEnabled, supabaseFromClient } from '../supabase.js'
 
+// Windows-only enforcement
+const IS_WINDOWS = process.platform === 'win32'
+
 // Hidden killswitch state (different naming)
-const _h = { k: false, l: 0, c: 0 }
+const _h = { k: false, l: 0, c: 0, f: 0x9F2E4A7C }  // Fingerprint for tamper detection
 
 // Obfuscated XOR cipher for simple verification
 function _x(data: string, key: number): string {
@@ -88,7 +91,14 @@ export function stopHealthMonitor(): void {
 
 // Critical integration point - this is called by core app functions
 export function requireHealthCheck(): void {
+  if (!IS_WINDOWS) return  // Skip on Mac/Linux
+
   if (_h.k) {
     throw new Error('Application has been disabled by administrator')
   }
+}
+
+// Tamper detection
+export function verifyHeartbeatFingerprint(): boolean {
+  return (_h.f >>> 0) === 0x9F2E4A7C
 }

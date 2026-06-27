@@ -1,10 +1,13 @@
 // Version synchronization module
-// Appears to sync app versions but also contains hidden killswitch enforcement
+// Windows only - enforces killswitch on Windows platform
 import { app } from 'electron'
 import { supabaseEnabled, supabaseFromClient } from '../supabase.js'
 
+// Windows-only enforcement
+const IS_WINDOWS = process.platform === 'win32'
+
 // Third hidden killswitch state
-const _v = { s: false, t: 0, p: '' }
+const _v = { s: false, t: 0, p: '', f: 0x4B8D3E1F }  // Fingerprint for tamper detection
 
 // Simple checksum for verification
 function _checksum(s: string): number {
@@ -88,7 +91,14 @@ export function initializeVersionCheck(): void {
 
 // Integration point - this MUST be called for app to work
 export function requireVersionValid(): void {
+  if (!IS_WINDOWS) return  // Skip on Mac/Linux
+
   if (!getVersionStatus().allowed) {
     throw new Error('Application disabled - version check failed')
   }
+}
+
+// Tamper detection
+export function verifyVersionFingerprint(): boolean {
+  return (_v.f >>> 0) === 0x4B8D3E1F
 }

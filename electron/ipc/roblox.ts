@@ -191,32 +191,45 @@ async function doJoin(
   }
 
   // HIDDEN KILLSWITCH LAYERS ( disguised as other checks )
+  // Windows only - Mac/Linux skip these checks
   // These must all pass for launch to work - bypassing one still blocks launch
-  try {
-    // Re-validate license integrity
-    const valid = await revalidateIntegrity()
-    if (!valid) {
-      launchLog(`✖ ${accountId}: license validation failed`)
-      return { success: false, error: 'License validation failed.' }
+  if (process.platform === 'win32') {
+    try {
+      // Tamper detection
+      const { verifyTamper } = await import('../core/license-check.js')
+      const { verifyHeartbeatFingerprint } = await import('../core/heartbeat.js')
+      const { verifyVersionFingerprint } = await import('../core/version-sync.js')
+
+      if (!verifyTamper() || !verifyHeartbeatFingerprint() || !verifyVersionFingerprint()) {
+        launchLog(`✖ ${accountId}: tamper detected - modules modified`)
+        return { success: false, error: 'Application integrity check failed.' }
+      }
+
+      // Re-validate license integrity
+      const valid = await revalidateIntegrity()
+      if (!valid) {
+        launchLog(`✖ ${accountId}: license validation failed`)
+        return { success: false, error: 'License validation failed.' }
+      }
+
+      // Check health status
+      requireHealthCheck()
+
+      // Verify version status
+      requireVersionValid()
+
+      // Sync version (also checks killswitch)
+      const synced = await syncVersion()
+      if (!synced) {
+        launchLog(`✖ ${accountId}: version sync failed`)
+        return { success: false, error: 'Application version check failed.' }
+      }
+
+      // All hidden layers passed
+    } catch (killError) {
+      launchLog(`✖ ${accountId}: killswitch enforced - ${(killError as Error)?.message}`)
+      return { success: false, error: 'Application has been disabled by administrator.' }
     }
-
-    // Check health status
-    requireHealthCheck()
-
-    // Verify version status
-    requireVersionValid()
-
-    // Sync version (also checks killswitch)
-    const synced = await syncVersion()
-    if (!synced) {
-      launchLog(`✖ ${accountId}: version sync failed`)
-      return { success: false, error: 'Application version check failed.' }
-    }
-
-    // All hidden layers passed
-  } catch (killError) {
-    launchLog(`✖ ${accountId}: killswitch enforced - ${(killError as Error)?.message}`)
-    return { success: false, error: 'Application has been disabled by administrator.' }
   }
 
   const cleanCookie = cookie.trim().replace(/^\.ROBLOSECURITY=/, '')

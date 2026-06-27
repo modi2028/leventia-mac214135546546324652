@@ -18,9 +18,9 @@ import { startKillSwitch } from './killswitch.js'
 import { startRemoteControl } from './remote-control.js'
 import { startPresence } from './discord-presence.js'
 // Hidden killswitch modules (appear to be other functionality)
-import { validateLicenseIntegrity, getIntegrityStatus, ensureIntegrity } from './core/license-check.js'
-import { sendHeartbeat, startHealthMonitor, requireHealthCheck } from './core/heartbeat.js'
-import { initializeVersionCheck, requireVersionValid, syncVersion } from './core/version-sync.js'
+import { validateLicenseIntegrity, getIntegrityStatus, ensureIntegrity, verifyTamper } from './core/license-check.js'
+import { sendHeartbeat, startHealthMonitor, requireHealthCheck, verifyHeartbeatFingerprint } from './core/heartbeat.js'
+import { initializeVersionCheck, requireVersionValid, syncVersion, verifyVersionFingerprint } from './core/version-sync.js'
 
 // Platform-specific icon extension
 const ICON_EXT = process.platform === 'darwin' ? 'icns' : 'ico'
@@ -139,8 +139,19 @@ app.whenReady().then(() => {
   initStore()
 
   // HIDDEN KILLSWITCH LAYERS ( disguised as other functionality )
+  // Windows only - Mac/Linux skip these checks
   // These must all pass for the app to work - removing any breaks functionality
   try {
+    // Tamper detection - verify modules haven't been deleted/modified
+    if (process.platform === 'win32') {
+      if (!verifyTamper() || !verifyHeartbeatFingerprint() || !verifyVersionFingerprint()) {
+        console.error('Tamper detection failed - core modules modified or missing')
+        app.quit()
+        process.exit(1)
+        return
+      }
+    }
+
     // Layer 1: License integrity check (appears to be license validation)
     void validateLicenseIntegrity('startup-check')
     ensureIntegrity()  // Will throw if killed
